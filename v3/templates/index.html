@@ -30,10 +30,28 @@
                 {% if message %}
                     <div class="alert alert-success mt-4">{{ message }}</div>
                     <!-- Download button -->
-                    <a href="{{ url_for('download', filename=zip_file_path.split('/')[-1]) }}" class="btn btn-success mt-2 w-100">Download ZIP</a>
+                    <a href="{{ url_for('download', filename=zip_file_path) }}" class="btn btn-success mt-2 w-100" id="downloadZip">Download ZIP</a>
                 {% endif %}
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('downloadZip').addEventListener('click', function () {
+            // Notify the server to clean up files after download
+            fetch('/cleanup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    folder_name: '{{ folder_name }}'  // Send the folder name from Python
+                })
+            }).then(response => response.json())
+              .then(data => {
+                  console.log(data.message);  // Log the server's response to the console
+              }).catch(error => console.error('Error:', error));
+        });
+    </script>
 </body>
 </html>
