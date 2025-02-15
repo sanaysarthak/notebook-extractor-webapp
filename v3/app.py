@@ -1,13 +1,15 @@
 import os
+import time
 import zipfile
 import shutil
 from flask import Flask, render_template, request, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 import nbformat
+from threading import Thread  # Importing Thread to run background task
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
-OUTPUT_FOLDER = 'Outputs'
+OUTPUT_FOLDER = 'outputs'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
@@ -48,6 +50,24 @@ def delete_output_folder(output_folder):
     if os.path.exists(output_folder):
         shutil.rmtree(output_folder)
 
+# Function to delete uploaded file
+def delete_uploaded_file(upload_path):
+    if os.path.exists(upload_path):
+        os.remove(upload_path)
+
+# Background task to delete files after 20 seconds
+def delete_files_after_delay(zip_file_path, output_folder):
+    # Wait for 4 seconds before deleting files
+    time.sleep(4)
+
+    # Delete the zip file after 20 seconds
+    if os.path.exists(zip_file_path):
+        os.remove(zip_file_path)
+
+    # Delete the extracted Python files (the entire folder) after 20 seconds
+    if os.path.exists(output_folder):
+        shutil.rmtree(output_folder)
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -78,6 +98,12 @@ def index():
                 # Create ZIP file after extraction
                 zip_file_path = create_zip(output_folder)
 
+                # Delete the uploaded notebook file after ZIP is created
+                delete_uploaded_file(notebook_path)
+
+                # Start the background task to delete files after 20 seconds
+                Thread(target=delete_files_after_delay, args=(zip_file_path, output_folder)).start()
+
                 # Return success message and ZIP file path to frontend
                 return render_template('index.html', message=f"{len(code_cells)} code cells were extracted and saved.",
                                        zip_file_path=zip_file_path.split('/')[-1], folder_name=sanitized_folder_name)
@@ -87,7 +113,10 @@ def index():
 @app.route('/download/<filename>')
 def download(filename):
     # Serve the ZIP file for download
-    return send_from_directory(app.config['OUTPUT_FOLDER'], filename)
+    zip_file_path = os.path.join(app.config['OUTPUT_FOLDER'], filename)
+    if os.path.exists(zip_file_path):
+        return send_from_directory(app.config['OUTPUT_FOLDER'], filename)
+    return "File not found", 404
 
 @app.route('/cleanup', methods=['POST'])
 def cleanup():
@@ -95,6 +124,11 @@ def cleanup():
     folder_name = request.json.get('folder_name')
     output_folder = os.path.join(app.config['OUTPUT_FOLDER'], folder_name)
     delete_output_folder(output_folder)
+
+    # Also delete the uploaded notebook file after ZIP is created
+    zip_file = os.path.join(app.config['OUTPUT_FOLDER'], f"{folder_name}.zip")
+    delete_uploaded_file(zip_file)
+
     return jsonify({"status": "success", "message": "Files deleted after download."})
 
 if __name__ == '__main__':
