@@ -1,0 +1,32 @@
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.container {
+    background-color: #1f1f1f;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    color: #fff;
+}
+
+.alert {
+    margin-top: 20px;
+}
+
+.btn-primary {
+    background-color: #6200ea;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #3700b3;
+}
+
+.form-group label {
+    color: #e0e0e0;
+}
