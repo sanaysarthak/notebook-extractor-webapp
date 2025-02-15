@@ -55,18 +55,18 @@ def delete_uploaded_file(upload_path):
     if os.path.exists(upload_path):
         os.remove(upload_path)
 
-# Background task to delete files after 20 seconds
-def delete_files_after_delay(zip_file_path, output_folder):
-    # Wait for 4 seconds before deleting files
-    time.sleep(4)
+# Function to delete everything in the outputs folder after 10 seconds
+def delete_all_files_in_output():
+    # Wait for 10 seconds before deleting files
+    time.sleep(10)
 
-    # Delete the zip file after 20 seconds
-    if os.path.exists(zip_file_path):
-        os.remove(zip_file_path)
-
-    # Delete the extracted Python files (the entire folder) after 20 seconds
-    if os.path.exists(output_folder):
-        shutil.rmtree(output_folder)
+    # Delete everything inside the OUTPUT_FOLDER
+    for filename in os.listdir(OUTPUT_FOLDER):
+        file_path = os.path.join(OUTPUT_FOLDER, filename)
+        if os.path.isdir(file_path):
+            shutil.rmtree(file_path)  # Delete subdirectories
+        else:
+            os.remove(file_path)  # Delete files
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -101,8 +101,8 @@ def index():
                 # Delete the uploaded notebook file after ZIP is created
                 delete_uploaded_file(notebook_path)
 
-                # Start the background task to delete files after 20 seconds
-                Thread(target=delete_files_after_delay, args=(zip_file_path, output_folder)).start()
+                # Start the background task to delete everything inside the OUTPUT_FOLDER after 10 seconds
+                Thread(target=delete_all_files_in_output).start()
 
                 # Return success message and ZIP file path to frontend
                 return render_template('index.html', message=f"{len(code_cells)} code cells were extracted and saved.",
@@ -120,14 +120,8 @@ def download(filename):
 
 @app.route('/cleanup', methods=['POST'])
 def cleanup():
-    # This function will delete the extracted files after download is confirmed.
-    folder_name = request.json.get('folder_name')
-    output_folder = os.path.join(app.config['OUTPUT_FOLDER'], folder_name)
-    delete_output_folder(output_folder)
-
-    # Also delete the uploaded notebook file after ZIP is created
-    zip_file = os.path.join(app.config['OUTPUT_FOLDER'], f"{folder_name}.zip")
-    delete_uploaded_file(zip_file)
+    # This function will delete everything inside the outputs folder after download is confirmed
+    delete_all_files_in_output()
 
     return jsonify({"status": "success", "message": "Files deleted after download."})
 
