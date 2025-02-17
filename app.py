@@ -7,10 +7,11 @@ from werkzeug.utils import secure_filename
 import nbformat
 from threading import Thread  # Importing Thread to run background task
 from flask import jsonify  # Import jsonify to send JSON responses
+import tempfile
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads'
-OUTPUT_FOLDER = 'outputs'
+UPLOAD_FOLDER = '/tmp/uploads'
+OUTPUT_FOLDER = '/tmp/outputs'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
