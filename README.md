@@ -3,12 +3,18 @@
 <br />
   <h1 align="center">Jupyter Notebook Code Extractor Web App</h1>
 
+<p align="center">
+  <strong>The web app is now live and can be accessed at:</strong>  <a href="https://notebook-extractor.vercel.app/">notebook-extractor.app</a>
+  
+</p>
   <p align="center">
-    A Python web app to extract all code cells from a Jupyter Notebook and save each one as an individual .py file.
+    It allows a user extract all code cells from a Jupyter Notebook file and save each one of them as an individual .py file.
   </p>
 </div>
 
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8c1c1e5c-2453-49a2-8547-a70c3e044ec4" alt="webapp-screenshot"/>
+</p>
 
 <!-- TABLE OF CONTENTS -->
 <details>
