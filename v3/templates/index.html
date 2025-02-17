@@ -9,12 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-primary: #ff7e33;
-            --color-secondary: #9333ea;
-            --color-background: #121212;
-            --color-card: #1f1f1f;
-            --color-text-primary: #f5f5f5;
-            --color-text-secondary: #888;
+            --color-primary: #6C5B7B; /* Updated primary color to a soft mauve */
+            --color-secondary: #C06C84; /* Updated secondary color to a pinkish shade */
+            --color-background: #2A2A2A; /* Dark background */
+            --color-card: #3A3A3A; /* Slightly lighter card background */
+            --color-text-primary: #F5F5F5; /* Light text for readability */
+            --color-text-secondary: #B0B0B0; /* Subtle secondary text color */
             --border-radius: 12px;
             --transition: all 0.3s ease;
         }
@@ -45,12 +45,12 @@
             background-color: var(--color-card);
             border-radius: var(--border-radius);
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
 
         .app-header {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            background: linear-gradient(135deg, #6C5B7B, #C06C84);
             padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
@@ -85,14 +85,14 @@
             text-align: center;
             cursor: pointer;
             transition: var(--transition);
-            background-color: rgba(255, 126, 51, 0.05);
+            background-color: rgba(108, 91, 123, 0.1);
             position: relative;
         }
 
         .upload-container:hover,
         .upload-container.dragging {
             border-color: var(--color-secondary);
-            background-color: rgba(147, 51, 234, 0.1);
+            background-color: rgba(192, 108, 132, 0.1);
         }
 
         .upload-container i {
@@ -140,7 +140,7 @@
         .spinner {
             width: 48px;
             height: 48px;
-            border: 4px solid rgba(255, 126, 51, 0.1);
+            border: 4px solid rgba(108, 91, 123, 0.1);
             border-left-color: var(--color-primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -187,7 +187,7 @@
 
         .download-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 126, 51, 0.3);
+            box-shadow: 0 5px 15px rgba(108, 91, 123, 0.3);
         }
 
         @keyframes spin {
