@@ -7,10 +7,16 @@ from werkzeug.utils import secure_filename
 import nbformat
 from threading import Thread  # Importing Thread to run background task
 from flask import jsonify  # Import jsonify to send JSON responses
+import tempfile
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads'
-OUTPUT_FOLDER = 'outputs'
+# Using tmp folder for deployment as vercel only allows to write within the tmp folder.
+UPLOAD_FOLDER = '/tmp/uploads'
+OUTPUT_FOLDER = '/tmp/outputs'
+
+# Use the following folder for running the app locally
+# UPLOAD_FOLDER = '/uploads'
+# OUTPUT_FOLDER = '/outputs'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
