@@ -14,6 +14,10 @@ app = Flask(__name__)
 UPLOAD_FOLDER = '/tmp/uploads'
 OUTPUT_FOLDER = '/tmp/outputs'
 
+# Use the following folder for running the app locally
+# UPLOAD_FOLDER = '/uploads'
+# OUTPUT_FOLDER = '/outputs'
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 
