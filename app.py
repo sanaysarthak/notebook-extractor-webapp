@@ -58,8 +58,8 @@ def delete_uploaded_file(upload_path):
 
 # Function to delete everything in the outputs folder after 10 seconds
 def delete_all_files_in_output():
-    # Wait for 10 seconds before deleting files
-    time.sleep(10)
+    # Wait for 1 second before deleting files
+    time.sleep(1)
 
     # Delete everything inside the OUTPUT_FOLDER
     for filename in os.listdir(OUTPUT_FOLDER):
