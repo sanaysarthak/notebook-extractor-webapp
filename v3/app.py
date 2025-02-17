@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 import nbformat
 from threading import Thread  # Importing Thread to run background task
+from flask import jsonify  # Import jsonify to send JSON responses
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -104,10 +105,11 @@ def index():
                 # Start the background task to delete everything inside the OUTPUT_FOLDER after 10 seconds
                 Thread(target=delete_all_files_in_output).start()
 
-                # Return success message and ZIP file path to frontend
-                return render_template('index.html', message=f"{len(code_cells)} code cells were extracted and saved.",
-                                       zip_file_path=zip_file_path.split('/')[-1], folder_name=sanitized_folder_name)
-
+                # Return success message and ZIP file path to frontend in JSON format
+                return jsonify({
+                    "message": f"{len(code_cells)} code cells were extracted and saved.",
+                    "zip_file_path": zip_file_path.split('/')[-1]
+                })
     return render_template('index.html')
 
 @app.route('/download/<filename>')
