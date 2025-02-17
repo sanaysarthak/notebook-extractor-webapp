@@ -10,6 +10,7 @@ from flask import jsonify  # Import jsonify to send JSON responses
 import tempfile
 
 app = Flask(__name__)
+# Using tmp folder for deployment as vercel only allows to write within the tmp folder.
 UPLOAD_FOLDER = '/tmp/uploads'
 OUTPUT_FOLDER = '/tmp/outputs'
 
