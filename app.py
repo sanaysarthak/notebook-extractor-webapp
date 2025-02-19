@@ -1,22 +1,13 @@
 import os
-import time
 import zipfile
-import shutil
 from flask import Flask, render_template, request, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 import nbformat
-from threading import Thread  # Importing Thread to run background task
-from flask import jsonify  # Import jsonify to send JSON responses
-import tempfile
 
 app = Flask(__name__)
 # Using tmp folder for deployment as vercel only allows to write within the tmp folder.
 UPLOAD_FOLDER = '/tmp/uploads'
 OUTPUT_FOLDER = '/tmp/outputs'
-
-# Use the following folder for running the app locally
-# UPLOAD_FOLDER = '/uploads'
-# OUTPUT_FOLDER = '/outputs'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
@@ -24,6 +15,9 @@ app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 # Make sure the upload folder exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
+if not os.path.exists(OUTPUT_FOLDER):
+    os.makedirs(OUTPUT_FOLDER)
 
 # Function to sanitize folder name
 def sanitize_folder_name(folder_name):
@@ -51,29 +45,6 @@ def create_zip(output_folder):
             for file in files:
                 zipf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), output_folder))
     return zip_file_path
-
-# Function to delete extracted code cells and output folder
-def delete_output_folder(output_folder):
-    if os.path.exists(output_folder):
-        shutil.rmtree(output_folder)
-
-# Function to delete uploaded file
-def delete_uploaded_file(upload_path):
-    if os.path.exists(upload_path):
-        os.remove(upload_path)
-
-# Function to delete everything in the outputs folder after 10 seconds
-def delete_all_files_in_output():
-    # Wait for 1 second before deleting files
-    time.sleep(1)
-
-    # Delete everything inside the OUTPUT_FOLDER
-    for filename in os.listdir(OUTPUT_FOLDER):
-        file_path = os.path.join(OUTPUT_FOLDER, filename)
-        if os.path.isdir(file_path):
-            shutil.rmtree(file_path)  # Delete subdirectories
-        else:
-            os.remove(file_path)  # Delete files
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -105,12 +76,6 @@ def index():
                 # Create ZIP file after extraction
                 zip_file_path = create_zip(output_folder)
 
-                # Delete the uploaded notebook file after ZIP is created
-                delete_uploaded_file(notebook_path)
-
-                # Start the background task to delete everything inside the OUTPUT_FOLDER after 10 seconds
-                Thread(target=delete_all_files_in_output).start()
-
                 # Return success message and ZIP file path to frontend in JSON format
                 return jsonify({
                     "message": f"{len(code_cells)} code cells were extracted and saved.",
@@ -123,15 +88,13 @@ def download(filename):
     # Serve the ZIP file for download
     zip_file_path = os.path.join(app.config['OUTPUT_FOLDER'], filename)
     if os.path.exists(zip_file_path):
-        return send_from_directory(app.config['OUTPUT_FOLDER'], filename)
+        return send_from_directory(app.config['OUTPUT_FOLDER'], filename, as_attachment=True)
     return "File not found", 404
 
 @app.route('/cleanup', methods=['POST'])
 def cleanup():
-    # This function will delete everything inside the outputs folder after download is confirmed
-    delete_all_files_in_output()
-
-    return jsonify({"status": "success", "message": "Files deleted after download."})
+    # Keep this endpoint for compatibility but do nothing
+    return jsonify({"status": "success", "message": "No files deleted as using tmp storage."})
 
 if __name__ == '__main__':
     app.run(debug=True)

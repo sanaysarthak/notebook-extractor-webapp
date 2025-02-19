@@ -326,25 +326,27 @@
                     alert.textContent = 'Processing complete! Your code has been extracted.';
                     alert.classList.add('active');
                     
-                    // Create download button with direct link to the generated ZIP file
-                    const downloadButton = document.createElement('a');
-                    downloadButton.href = `/download/${data.zip_file_path}`;
+                    // Create a button element that will handle the download
+                    const downloadButton = document.createElement('button');
                     downloadButton.className = 'download-btn active';
                     downloadButton.innerHTML = `
                         <i class="fas fa-download"></i>
                         Download Extracted Code
                     `;
-                    downloadButton.download = '';  // This ensures the browser treats it as a download
+                    
+                    // Add click event to handle the download
+                    downloadButton.addEventListener('click', function() {
+                        // Create a hidden anchor element for download
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = `/download/${data.zip_file_path}`;
+                        downloadLink.download = `${data.zip_file_path}`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    });
                     
                     downloadContainer.innerHTML = '';  // Clear any previous content
                     downloadContainer.appendChild(downloadButton);
-
-                    // Trigger cleanup after a delay
-                    setTimeout(() => {
-                        fetch('/cleanup', {
-                            method: 'POST'
-                        }).catch(console.error);
-                    }, 1000);
                 } else {
                     throw new Error('No zip file found in response');
                 }
